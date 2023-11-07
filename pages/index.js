@@ -1,13 +1,14 @@
 import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { Input, Typography, Button, Space, notification } from "antd";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const { TextArea } = Input;
 
 const { Title, Paragraph } = Typography;
 
@@ -21,6 +22,8 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [apiResponse, setApiResponse] = useState(null);
   const [switchLoading, setSwitchLoading] = useState(false);
+  const [nameResponse, setNameResponse] = useState("");
+  const [textResponse, setTextResponse] = useState("");
 
   const [api, contextHolder] = notification.useNotification();
   const openNotification = () => {
@@ -44,9 +47,13 @@ export default function Home() {
   const emailAPI = async (emailaddress) => {
     // Trigger loading animation
     setSwitchLoading(true);
-    //
-    let response = await axios.get(
-      "https://send-email-using-node-mailer.vercel.app/send/" + emailaddress
+
+    let response = await axios.post(
+      "https://send-email-using-node-mailer.vercel.app/send/" + emailaddress,
+      {
+        sendername: nameResponse,
+        message: textResponse,
+      }
     );
 
     // On completion stop the animation
@@ -72,7 +79,7 @@ export default function Home() {
           </div>
           <Paragraph>Input your email address </Paragraph>
           {contextHolder}
-          <Space.Compact style={{ width: "100%" }}>
+          <Space.Compact style={{ width: "100%", marginBottom: "16px" }}>
             <Input
               placeholder="user@example.com"
               onChange={(e) => {
@@ -88,6 +95,21 @@ export default function Home() {
               Submit
             </Button>
           </Space.Compact>
+          <br />
+          <Input
+            placeholder="Sender Name"
+            style={{ marginBottom: "16px" }}
+            onChange={(e) => {
+              setNameResponse(e.target.value);
+            }}
+          />
+          <br />
+          <TextArea
+            onChange={(e) => {
+              setTextResponse(e.target.value);
+            }}
+            rows={4}
+          />
         </div>
       </main>
     </>
